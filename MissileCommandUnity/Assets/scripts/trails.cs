@@ -10,25 +10,25 @@ public class trails : MonoBehaviour {
 	private int pixSize;
 	private Texture2D tex;
 	private Material mat;
-	private IntPtr texPtr;
+	private Color[] pixels;
 
 	// Use this for initialization
 	void Start () {
 		tex = new Texture2D(width, height);
-		mat = new ProceduralMaterial();
+		mat = GetComponent<MeshRenderer>().material;
 		mat.mainTexture = tex;
-		GetComponent<MeshRenderer> ().material = mat;
 		tex.alphaIsTransparency = true;
-		texPtr = tex.GetNativeTexturePtr();
+		pixels = tex.GetPixels();
 		pixSize = width * height;
 
-		SetTex((int)0xff0000ff);
+		Color c = Color.green;
+		SetTex(c);
 	}
 
-	void SetTex(int val)
+	void SetTex(Color val)
 	{
 		for (int i=0; i<pixSize; ++i) {
-			texPtr[i] = val;
+			pixels[i] = val;
 		}
 	}
 	
