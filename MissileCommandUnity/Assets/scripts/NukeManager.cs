@@ -7,6 +7,7 @@ public class NukeManager : MonoBehaviour {
 	public GameObject prefab;
 
 	private List<Nuke> nukes = new List<Nuke>();
+	private City[] cities;
 
 	class Nuke {
 		public Nuke(GameObject prefab, Vector3 start, Vector3 end, float duration)
@@ -42,13 +43,14 @@ public class NukeManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		cities = FindObjectsOfType(typeof(City)) as City[];
 	}
 
 	private float time = 0;
 	// Update is called once per frame
 	void Update () {
 		time += Time.deltaTime;
-		if (time > Random.Range(0.5f, 3f)) {
+		if (time > Random.Range(0.5f, 1f)) {
 			AddNuke();
 			time = 0;
 		}
@@ -57,17 +59,22 @@ public class NukeManager : MonoBehaviour {
 		{
 			Nuke nuke = nukes[i];
 			nuke.Update();
-			if (nuke.HasTouchedDown()) {
-				Destroy( nuke.go );
-				nukes.RemoveAt(i);
-				--i;
+			foreach (City city in cities) {
+				if (city.top > nuke.pos.y && city.left < nuke.pos.x && city.right > nuke.pos.x && city.bottom < nuke.pos.y) {
+					city.Die();
+					Destroy( nuke.go );
+					nukes.RemoveAt(i);
+					--i;
+					break;
+				}
 			}
 		}
 	}
 
 	void AddNuke() {
 		Vector3 start = new Vector3(Random.Range(-700,700), 540, 0);
-		Vector3 end = new Vector3(Random.Range(-850,850), -500, 0);
+		City dest = cities[Random.Range(0,6)];
+		Vector3 end = new Vector3(dest.transform.position.x, dest.transform.position.y, 0);
 		nukes.Add(new Nuke(prefab, start, end, 5));
 	}
 }
