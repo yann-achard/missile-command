@@ -75,6 +75,6 @@ public class NukeManager : MonoBehaviour {
 		Vector3 start = new Vector3(Random.Range(-700,700), 540, 0);
 		City dest = cities[Random.Range(0,6)];
 		Vector3 end = new Vector3(dest.transform.position.x, dest.transform.position.y, 0);
-		nukes.Add(new Nuke(prefab, start, end, 5));
+		nukes.Add(new Nuke(prefab, start, end, 3));
 	}
 }
