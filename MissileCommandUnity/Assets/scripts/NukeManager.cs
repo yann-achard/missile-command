@@ -51,7 +51,7 @@ public class NukeManager : MonoBehaviour {
 	void Update () {
 		time += Time.deltaTime;
 		if (time > Random.Range(0.5f, 1f)) {
-			AddNuke();
+			//AddNuke();
 			time = 0;
 		}
 
