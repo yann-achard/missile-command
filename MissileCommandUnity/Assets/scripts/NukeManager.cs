@@ -8,6 +8,7 @@ public class NukeManager : MonoBehaviour {
 
 	private List<Nuke> nukes = new List<Nuke>();
 	private City[] cities;
+	//private List<Base.Missile> missiles = new List<Base.Missile>();
 
 	class Nuke {
 		public Nuke(GameObject prefab, Vector3 start, Vector3 end, float duration)

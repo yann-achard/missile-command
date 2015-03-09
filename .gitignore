@@ -1,5 +1,6 @@
 MissileCommandUnity/Temp
 MissileCommandUnity/Library
+MissileCommandUnity/obj
 MissileCommandUnity/Assembly-CSharp-vs.csproj
 MissileCommandUnity/Assembly-CSharp.csproj
 MissileCommandUnity/Assembly-UnityScript-vs.unityproj
@@ -7,3 +8,9 @@ MissileCommandUnity/Assembly-UnityScript.unityproj
 MissileCommandUnity/MissileCommandUnity-csharp.sln
 MissileCommandUnity/MissileCommandUnity.sln
 MissileCommandUnity/MissileCommandUnity.userprefs
+MissileCommandUnity/Assets/UnityVS.meta
+MissileCommandUnity/Assets/UnityVS/
+MissileCommandUnity/MissileCommandUnity-csharp.v12.suo
+MissileCommandUnity/UnityVS.MissileCommandUnity.CSharp.csproj
+MissileCommandUnity/UnityVS.MissileCommandUnity.sln
+MissileCommandUnity/UnityVS.MissileCommandUnity.v12.suo
