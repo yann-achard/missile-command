@@ -7,8 +7,18 @@ public static class ExtensionMethods
 {
 	public static TSource MinBy<TSource, TMin>(this IEnumerable<TSource> source, System.Func<TSource, TMin> selector) where TMin : System.IComparable<TMin>
 	{
-			var first = source.FirstOrDefault();
-			return source.Aggregate(first, (min, current) => selector(current).CompareTo(selector(min)) < 0 ? current : min);
+		var first = source.FirstOrDefault();
+		return source.Aggregate(first, (min, current) => selector(current).CompareTo(selector(min)) < 0 ? current : min);
+	}
+
+	public static float XYSqDistTo(this Vector3 a, Vector3 b)
+	{
+		return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
+	}
+
+	public static float XYSqDistTo(this Vector3 a, float x, float y)
+	{
+		return (a.x-x)*(a.x-x)+(a.y-y)*(a.y-y);
 	}
 }
 
@@ -16,82 +26,107 @@ public static class ExtensionMethods
 public class MissileCommand : MonoBehaviour {
 
 	public GameObject missile_prefab;
-	public float left_wall;
-	public float right_wall;
-	public float ceiling;
+	public GameObject nuke_prefab;
+	public GameObject detonation_prefab;
 	public Base[] bases;
 
-	private List<Missile> missiles = new List<Missile>();
+	private City[] cities;
+	private List<Nuke> nukes = new List<Nuke>();
 
-	public class Missile
-	{
-		public Missile(GameObject prefab, MissileCommand mc, Vector3 start, Vector3 direction)
+	public class Nuke {
+		public Nuke(GameObject prefab, Vector3 start, Vector3 end, float duration)
 		{
-			com = mc;
-			go = (GameObject)Instantiate(prefab, start, Quaternion.identity);
+			go = (GameObject)Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
 			lr = go.transform.FindChild("Line").GetComponent<LineRenderer>();
 			pos = start;
 			go.transform.position = pos;
+			endY = end.y;
 			lr.SetPosition(0, pos);
 			lr.SetPosition(1, pos);
-			dir = direction;
-			rend = lr.GetComponent<Renderer>();
+			dir = (end-start) / duration;
 		}
-		
+
 		public void Update()
 		{
-			pos += dir * 500.0f * Time.deltaTime;
-			rend.material.color = new Color(rend.material.color.r, rend.material.color.g, rend.material.color.b, Mathf.Max(0.0f,  rend.material.color.a - Time.deltaTime * 0.6f));
+			pos += dir * Time.deltaTime;
 			go.transform.position = pos;
 			lr.SetPosition(1, pos);
 		}
-		
-		public bool HasFlownOff()
+
+		public bool HasTouchedDown()
 		{
-			return pos.y >= com.ceiling || pos.x <= com.left_wall || pos.x >= com.right_wall;
+			return pos.y <= endY;
 		}
-		
-		private Renderer rend;
-		public MissileCommand com;
+
+		public float endY;
 		public GameObject go;
 		public LineRenderer lr;
 		public Vector3 pos;
 		public Vector3 dir;
 	}
 
-	void Start () {
+	void Start ()
+	{
+		cities = FindObjectsOfType(typeof(City)) as City[];
 	}
 
 	private Base SelectFiringBase(float dx, float dy)
 	{
 		return bases
 			.Where(b => b.missile_count > 0)
-			.MinBy(b => (dx-b.transform.position.x)*(dx-b.transform.position.x)+(dy-b.transform.position.y)*(dy-b.transform.position.y))
+			.MinBy(b => transform.position.XYSqDistTo(dx, dy))
 		;
 	}
 	
+	void AddNuke() {
+		Vector3 start = new Vector3(Random.Range(-700,700), 540, 0);
+		City dest = cities[Random.Range(0,6)];
+		Vector3 end = new Vector3(dest.transform.position.x, dest.transform.position.y, 0);
+		nukes.Add(new Nuke(nuke_prefab, start, end, 3));
+	}
+
+	private float time = 0;
 	void Update ()
 	{
+		// Add Nuke
+		time += Time.deltaTime;
+		if (time > Random.Range(0.5f, 1f)) {
+			AddNuke();
+			time = 0;
+		}
+	
+		// Fire Missile
 		if (Input.GetButtonDown("Fire1"))
 		{
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);    
-			Vector3 e = new Vector3 (ray.origin.x, ray.origin.y, 35);
+			Vector3 dst = new Vector3 (ray.origin.x, ray.origin.y, 35);
 			Base b = SelectFiringBase(ray.origin.x, ray.origin.y);
 			Vector3 s = new Vector3 (b.transform.position.x, b.transform.position.y, 35);
 			if (b != null) { 
-				missiles.Add(new Missile(missile_prefab, this, s, (e-s).normalized));
+				((GameObject)Instantiate(missile_prefab, s, Quaternion.identity)).GetComponent<Missile>().FireAt(dst);
 			}
 		}
 
-		for (int i=0; i<missiles.Count; ++i)
+		for (int i=0; i<nukes.Count; ++i)
 		{
-			missiles[i].Update();
-			if (missiles[i].HasFlownOff()) {
-				Destroy(missiles[i].go);
-				missiles.RemoveAt(i);
-				--i;
+			// Nuke movement
+			Nuke nuke = nukes[i];
+			nuke.Update();
+		}
+
+		// Nuke / City
+		for (int i=0; i<nukes.Count; ++i)
+		{
+			Nuke nuke = nukes[i];
+			foreach (City city in cities) {
+				if (city.top > nuke.pos.y && city.left < nuke.pos.x && city.right > nuke.pos.x && city.bottom < nuke.pos.y) {
+					city.Die();
+					Destroy( nuke.go );
+					nukes.RemoveAt(i);
+					--i;
+					break;
+				}
 			}
 		}
 	}
-
 }

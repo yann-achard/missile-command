@@ -8,9 +8,8 @@ public class NukeManager : MonoBehaviour {
 
 	private List<Nuke> nukes = new List<Nuke>();
 	private City[] cities;
-	//private List<Base.Missile> missiles = new List<Base.Missile>();
 
-	class Nuke {
+	public class Nuke {
 		public Nuke(GameObject prefab, Vector3 start, Vector3 end, float duration)
 		{
 			go = (GameObject)Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -52,7 +51,7 @@ public class NukeManager : MonoBehaviour {
 	void Update () {
 		time += Time.deltaTime;
 		if (time > Random.Range(0.5f, 1f)) {
-			//AddNuke();
+			AddNuke();
 			time = 0;
 		}
 
