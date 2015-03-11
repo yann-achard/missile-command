@@ -13,7 +13,8 @@ public class City : MonoBehaviour {
 	private bool isDead = false;
 	// Use this for initialization
 	void Start () {
-	
+		BoxCollider2D bc = gameObject.AddComponent("BoxCollider2D") as BoxCollider2D;
+		bc.bounds.SetMinMax(new Vector3(left, bottom, transform.position.z), new Vector3(right, (top+bottom)/2.0f, transform.position.z));
 	}
 
 	public bool IsDead()
@@ -25,6 +26,14 @@ public class City : MonoBehaviour {
 	{
 		renderer.material = dead_city_mat;
 	}
+
+	void OnTriggerEnter2D(Collider2D coll)
+	{
+		if (coll.gameObject.tag == "Explosive") { 
+			coll.gameObject.SendMessage("Detonate", SendMessageOptions.RequireReceiver);
+		}
+		Die();
+    }
 
 	public void Die()
 	{

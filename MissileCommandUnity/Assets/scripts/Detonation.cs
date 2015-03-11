@@ -6,17 +6,18 @@ public class Detonation : MonoBehaviour {
 	private Material mat;
 
 	void Start () {
+		transform.eulerAngles = new Vector3(90, 0, 0);
 		GetComponent<Animator>().SetTrigger("StartTrigger");
-		Destroy(gameObject, 4.0f);
+		Destroy(gameObject, 5.0f);
 	}
 	
 	void Update () {
 	}
 
-	void OnCollisionEnter2D(Collision2D coll)
+	void OnTriggerEnter2D(Collider2D coll)
 	{
 		if (coll.gameObject.tag == "Explosive") { 
-			coll.gameObject.SendMessage("Detonate");
+			coll.gameObject.SendMessage("Detonate", SendMessageOptions.RequireReceiver);
 		}
     }
 }
