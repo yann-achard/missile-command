@@ -8,7 +8,7 @@ public class Detonation : MonoBehaviour {
 	void Start () {
 		transform.eulerAngles = new Vector3(90, 0, 0);
 		GetComponent<Animator>().SetTrigger("StartTrigger");
-		Destroy(gameObject, 5.0f);
+		Destroy(gameObject, 3.2f);
 	}
 	
 	void Update () {

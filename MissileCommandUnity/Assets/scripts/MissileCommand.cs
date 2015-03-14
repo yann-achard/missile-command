@@ -58,7 +58,7 @@ public class MissileCommand : MonoBehaviour {
 	{
 		// Add Nuke
 		time += Time.deltaTime;
-		if (time > Random.Range(0.5f, 1f)) {
+		if (time > Random.Range(1.5f, 2f)) {
 			DropNuke();
 			time = 0;
 		}
