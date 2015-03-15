@@ -34,6 +34,7 @@ public class MissileCommand : MonoBehaviour {
 	void Start ()
 	{
 		bases = FindObjectsOfType(typeof(Base)) as Base[];
+		bases = bases.OrderBy(b => b.transform.position.x).ToArray();
 		cities = FindObjectsOfType(typeof(City)) as City[];
 	}
 
@@ -64,15 +65,21 @@ public class MissileCommand : MonoBehaviour {
 		}
 	
 		// Fire Missile
-		if (Input.GetButtonDown("Fire1"))
-		{
+		Base fb = null;
+		if (Input.GetKeyDown(KeyCode.Alpha1)) {
+			fb = bases[0];
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha2)) {
+			fb = bases[1];
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha3)) {
+			fb = bases[2];
+		}
+		if (fb != null) {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);    
 			Vector3 dst = new Vector3 (ray.origin.x, ray.origin.y, 35);
-			Base b = SelectFiringBase(ray.origin.x, ray.origin.y);
-			Vector3 s = new Vector3 (b.transform.position.x, b.transform.position.y, 35);
-			if (b != null) { 
-				((GameObject)Instantiate(missile_prefab, s, Quaternion.identity)).GetComponent<Missile>().FireAt(dst);
-			}
+			Vector3 s = new Vector3 (fb.transform.position.x, fb.transform.position.y, 35);
+			((GameObject)Instantiate(missile_prefab, s, Quaternion.identity)).GetComponent<Missile>().FireAt(dst);
 		}
 	}
 }
