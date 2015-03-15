@@ -26,6 +26,7 @@ public class Missile : MonoBehaviour {
 		lr.SetPosition(0, transform.position);
 		lr.SetPosition(1, transform.position);
 		rend = lr.GetComponent<Renderer>();
+		GetComponent<AudioSource>().Play();
 	}
 		
 	public void Update()

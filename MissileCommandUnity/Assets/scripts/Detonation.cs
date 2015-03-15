@@ -5,10 +5,18 @@ public class Detonation : MonoBehaviour {
 
 	private Material mat;
 
+	private static float lastSoundTime = -42.0f;
+
 	void Start () {
 		transform.eulerAngles = new Vector3(90, 0, 0);
 		GetComponent<Animator>().SetTrigger("StartTrigger");
-		Destroy(gameObject, 3.2f);
+
+		float time = Time.realtimeSinceStartup;
+		if (time - lastSoundTime >= 0.2f) { 
+			GetComponent<AudioSource>().Play();
+			lastSoundTime = time;
+		}
+		Destroy(gameObject, 5.0f);
 	}
 	
 	void Update () {

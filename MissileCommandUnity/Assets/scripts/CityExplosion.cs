@@ -28,6 +28,7 @@ public class CityExplosion : MonoBehaviour {
 			times.Add(Random.Range(0,duration));
 		}
 		times.Sort();
+		GetComponent<AudioSource>().Play();
 	}
 
 	private void BoomNow()
@@ -48,6 +49,11 @@ public class CityExplosion : MonoBehaviour {
 				if (elapsedTime >= times[0]) {
 					BoomNow();
 					times.RemoveAt(0);
+				}
+				if (elapsedTime >= duration)
+				{
+					GetComponent<AudioSource>().Stop();
+					Destroy(gameObject);
 				}
 			}
 		}
