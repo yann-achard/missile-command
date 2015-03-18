@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Reflection;
 using System.Collections;
 
 public class Detonation : MonoBehaviour {
@@ -9,13 +10,15 @@ public class Detonation : MonoBehaviour {
 	private float timeLeft;
 	private static float lastSoundTime = -42.0f;
 	private MeshRenderer rend;
+	private Light halo;
 	private Color[] c = new Color[]{
-		Color.magenta, // new Vector4(0.8f, 0.8f, 0.1f, 1),
-		Color.cyan, // new Vector4(0.1f, 0.8f, 0.8f, 1),
-		Color.yellow, // new Vector4(0.1f, 0.8f, 0.8f, 1),
-		Color.white, // new Vector4(0.1f, 0.8f, 0.8f, 1),
-		Color.red, // new Vector4(1.0f, 0.1f, 0.1f, 1),
-		//Color.` new Vector4(0.1f, 1.0f, 0.1f, 1),
+		new Vector4(1.0f, 1.0f, 0.0f, 1),
+		new Vector4(1.0f, 0.0f, 0.0f, 1),
+		new Vector4(1.0f, 1.0f, 1.0f, 1),
+		new Vector4(0.0f, 0.0f, 1.0f, 1),
+		new Vector4(1.0f, 0.0f, 1.0f, 1),
+		new Vector4(0.0f, 1.0f, 1.0f, 1),
+		new Vector4(0.0f, 1.0f, 0.0f, 1),
 	};
 
 	void Start () {
@@ -31,21 +34,21 @@ public class Detonation : MonoBehaviour {
 		timeSeed = time;
 
 		rend = GetComponent<MeshRenderer>();
-//		Material mat = new Material(rend.material);
-//		rend.material = mat;
+		halo = GetComponent<Light>();
 	
 		Destroy(gameObject, duration);
-		//Destroy(mat, duration);
 	}
 	
 	void Update () {
 		timeLeft -= Time.deltaTime;
 		int t = (int)(timeSeed + Time.realtimeSinceStartup * 1000.0f);
-		int u = (t/50) % c.Length;
-		int f = t % 50;
-		Color col = Color.Lerp(c[u], c[(u+1) % c.Length], f / 50.0f);
+		int u = (t/80) % c.Length;
+		int f = t % 80;
+		//Color col = Color.Lerp(c[u], c[(u+1) % c.Length], f / 50.0f);
+		Color col = c[u];
 		col.a = Mathf.Clamp01(timeLeft-1.2f);
 		rend.material.color = col;
+		halo.color = col;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll)
